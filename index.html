@@ -372,52 +372,26 @@
                 setTimeout(createFirework, Math.random() * 600);
             }, 800);
         }
-
-        function showEndContent() {
-            const countdownEl = document.querySelector('.countdown');
-            const messageEl = document.querySelector('.message');
-            
-            // Fade out countdown and message
-            countdownEl.style.opacity = '0';
-            messageEl.style.opacity = '0';
-            
-            setTimeout(() => {
-                countdownEl.style.display = 'none';
-                messageEl.style.display = 'none';
-                
-                // Show new year message with animation
-                const newYearEl = document.getElementById('newYear');
-                newYearEl.style.display = 'block';
-                
-                setTimeout(() => {
-                    newYearEl.style.opacity = '1';
-                    newYearEl.style.transform = 'scale(1)';
-                    
-                    // Show quotes
-                    const quotesEl = document.getElementById('quotes');
-                    quotesEl.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        quotesEl.style.opacity = '1';
-                        document.querySelectorAll('.quote').forEach((quote, index) => {
-                            setTimeout(() => {
-                                quote.classList.add('visible');
-                            }, index * 1000);
-                        });
-                    }, 500);
-                    
-                    // Start fireworks
-                    startFireworks();
-                }, 100);
-            }, 500);
-        }
-
-        
         function updateCountdown() {
-    const now = new Date().getTime();
-    const currentYear = new Date().getFullYear();
-    const newYear = new Date(`January 1, ${currentYear + 1} 00:00:00`).getTime();
-    const gap = newYear - now;
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const newYear = new Date(`January 1, ${currentYear + 1} 00:00:00`);
+    
+    // Check if it's exactly midnight of the New Year
+    if (
+        now.getMonth() === 0 && 
+        now.getDate() === 1 && 
+        now.getHours() === 0 && 
+        now.getMinutes() === 0 && 
+        now.getSeconds() === 0
+    ) {
+        // Exactly at midnight - stop countdown and show end content
+        clearInterval(timerInterval);
+        showEndContent();
+        return;
+    }
+
+    const gap = newYear.getTime() - now.getTime();
 
     const second = 1000;
     const minute = second * 60;
@@ -437,14 +411,57 @@
 
     // Check if countdown has ended
     if (gap <= 0) {
+        // Immediately stop the interval
         clearInterval(timerInterval);
+        
+        // Reset all countdown values to 00
+        document.getElementById('days').innerText = '00';
+        document.getElementById('hours').innerText = '00';
+        document.getElementById('minutes').innerText = '00';
+        document.getElementById('seconds').innerText = '00';
+        
+        // Call the function to show end content
         showEndContent();
     }
 }
 
-function testEnd() {
-    clearInterval(timerInterval);
-    showEndContent();
+function showEndContent() {
+    const countdownEl = document.querySelector('.countdown');
+    const messageEl = document.querySelector('.message');
+    
+    // Fade out countdown and message
+    countdownEl.style.opacity = '0';
+    messageEl.style.opacity = '0';
+    
+    setTimeout(() => {
+        countdownEl.style.display = 'none';
+        messageEl.style.display = 'none';
+        
+        // Show new year message with animation
+        const newYearEl = document.getElementById('newYear');
+        newYearEl.style.display = 'block';
+        
+        setTimeout(() => {
+            newYearEl.style.opacity = '1';
+            newYearEl.style.transform = 'scale(1)';
+            
+            // Show quotes
+            const quotesEl = document.getElementById('quotes');
+            quotesEl.style.display = 'block';
+            
+            setTimeout(() => {
+                quotesEl.style.opacity = '1';
+                document.querySelectorAll('.quote').forEach((quote, index) => {
+                    setTimeout(() => {
+                        quote.classList.add('visible');
+                    }, index * 1000);
+                });
+            }, 500);
+            
+            // Start fireworks
+            startFireworks();
+        }, 100);
+    }, 500);
 }
 
 // Initialize
