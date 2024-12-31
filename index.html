@@ -49,6 +49,17 @@
             100% { transform: scale(1) rotate(360deg); }
         }
 
+        @keyframes firework {
+            0% { transform: translate(var(--x), var(--endy)) scale(0.001); opacity: 1; }
+            50% { transform: translate(var(--x), var(--endy)) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--endy)) scale(1.2); opacity: 0; }
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
         body {
             min-height: 100vh;
             display: flex;
@@ -97,6 +108,7 @@
             margin: 20px;
             position: relative;
             border: 3px dashed #4dd0e1;
+            transition: opacity 0.5s ease;
         }
 
         .countdown {
@@ -105,6 +117,7 @@
             margin: 30px 0;
             justify-content: center;
             flex-wrap: wrap;
+            transition: opacity 0.5s ease;
         }
 
         .time-box {
@@ -113,7 +126,7 @@
             border-radius: 25px;
             min-width: 120px;
             box-shadow: 0 8px 25px rgba(0, 131, 143, 0.15);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
             animation: fadeInScale 0.5s ease-out;
             border: 3px solid #4dd0e1;
             position: relative;
@@ -170,6 +183,7 @@
             display: inline-block;
             border: 2px dashed #4dd0e1;
             text-shadow: 1px 1px 2px rgba(0, 131, 143, 0.2);
+            transition: opacity 0.5s ease;
         }
 
         .new-year {
@@ -177,13 +191,17 @@
             font-weight: bold;
             margin: 20px 0;
             display: none;
-            animation: wiggle 1s infinite;
             color: #00838f;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 1s ease-out;
         }
 
         .quotes {
             display: none;
             margin-top: 30px;
+            opacity: 0;
+            transition: opacity 1s ease-out;
         }
 
         .quote {
@@ -191,13 +209,19 @@
             padding: 20px;
             background: #fff;
             border-radius: 20px;
-            opacity: 0;
             color: #00838f;
             font-size: 1rem;
             box-shadow: 0 4px 15px rgba(0, 131, 143, 0.1);
             border: 2px solid #4dd0e1;
             position: relative;
-            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease-out;
+        }
+
+        .quote.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .quote:before {
@@ -219,23 +243,6 @@
             height: 100%;
             pointer-events: none;
             z-index: 1;
-        }
-
-        @keyframes firework {
-            0% { transform: translate(var(--x), var(--endy)) scale(0.001); opacity: 1; }
-            50% { transform: translate(var(--x), var(--endy)) scale(1); opacity: 1; }
-            100% { transform: translate(var(--x), var(--endy)) scale(1.2); opacity: 0; }
-        }
-
-        .firework {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: var(--size);
-            height: var(--size);
-            animation: firework var(--duration) ease-out forwards;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--color1) 0%, var(--color2) 50%, transparent 100%);
         }
 
         @media (max-width: 600px) {
@@ -294,22 +301,23 @@
         
         <div class="message">✨ Let's welcome new beginnings with hope and joy ✨</div>
 
-<div class="new-year" id="newYear">✨ Welcome 2025! Let's Make It Special! ✨</div>
+        <div class="new-year" id="newYear">✨ Welcome 2025! Let's Make It Special! ✨</div>
 
-<div class="quotes" id="quotes">
-    <div class="quote">✨ "As the clock strikes midnight, remember: every ending is just a beautiful beginning. Your past has made you stronger, and your future holds endless possibilities."</div>
-    
-    <div class="quote">🌟 "A new year is like a blank book - your pen is in your hands. Make it a story so epic that you'll never want to put it down."</div>
-    
-    <div class="quote">✨ "The beauty of a new year lies not in the destination, but in all the dreams we'll chase and moments we'll create along the way."</div>
-    
-    <div class="quote">🌟 "May this year bring you the courage to try, the strength to persevere, and the joy of achieving things you never thought possible."</div>
-    
-    <div class="quote">✨ "Here's to 365 new chances to laugh more, dream bigger, love deeper, and create memories that will last a lifetime."</div>
-</div>
+        <div class="quotes" id="quotes">
+            <div class="quote">✨ "As the clock strikes midnight, remember: every ending is just a beautiful beginning. Your past has made you stronger, and your future holds endless possibilities."</div>
+            
+            <div class="quote">🌟 "A new year is like a blank book - your pen is in your hands. Make it a story so epic that you'll never want to put it down."</div>
+            
+            <div class="quote">✨ "The beauty of a new year lies not in the destination, but in all the dreams we'll chase and moments we'll create along the way."</div>
+            
+            <div class="quote">🌟 "May this year bring you the courage to try, the strength to persevere, and the joy of achieving things you never thought possible."</div>
+            
+            <div class="quote">✨ "Here's to 365 new chances to laugh more, dream bigger, love deeper, and create memories that will last a lifetime."</div>
+        </div>
     </div>
 
     <script>
+        // Create stars background
         function createStars(count) {
             for(let i = 0; i < count; i++) {
                 const star = document.createElement('div');
@@ -321,6 +329,7 @@
             }
         }
 
+        // Create firework effect
         function createFirework() {
             const colors = [
                 ['#ff0', '#ffa500'],
@@ -364,52 +373,86 @@
             }, 800);
         }
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const currentYear = new Date().getFullYear();
-            const newYear = new Date(`January 1, ${currentYear + 1} 00:00:00`).getTime();
-            const gap = newYear - now;
-
-            const second = 1000;
-            const minute = second * 60;
-            const hour = minute * 60;
-            const day = hour * 24;
-
-            const d = Math.floor(gap / day);
-            const h = Math.floor((gap % day) / hour);
-            const m = Math.floor((gap % hour) / minute);
-            const s = Math.floor((gap % minute) / second);
-
-            document.getElementById('days').innerText = d.toString().padStart(2, '0');
-            document.getElementById('hours').innerText = h.toString().padStart(2, '0');
-            document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
-            document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
-
-            if (gap <= 0) {
-                clearInterval(timerInterval);
-                document.querySelector('.countdown').style.display = 'none';
-                document.querySelector('.message').style.display = 'none';
+        function showEndContent() {
+            const countdownEl = document.querySelector('.countdown');
+            const messageEl = document.querySelector('.message');
+            
+            // Fade out countdown and message
+            countdownEl.style.opacity = '0';
+            messageEl.style.opacity = '0';
+            
+            setTimeout(() => {
+                countdownEl.style.display = 'none';
+                messageEl.style.display = 'none';
                 
-                const newYear = document.getElementById('newYear');
-                newYear.style.display = 'block';
+                // Show new year message with animation
+                const newYearEl = document.getElementById('newYear');
+                newYearEl.style.display = 'block';
                 
-                const quotes = document.getElementById('quotes');
-                quotes.style.display = 'block';
-                
-                startFireworks();
-                
-                document.querySelectorAll('.quote').forEach((quote, index) => {
+                setTimeout(() => {
+                    newYearEl.style.opacity = '1';
+                    newYearEl.style.transform = 'scale(1)';
+                    
+                    // Show quotes
+                    const quotesEl = document.getElementById('quotes');
+                    quotesEl.style.display = 'block';
+                    
                     setTimeout(() => {
-                        quote.style.animation = 'fadeInScale 1.5s forwards';
-                    }, index * 2000);
-                });
-            }
+                        quotesEl.style.opacity = '1';
+                        document.querySelectorAll('.quote').forEach((quote, index) => {
+                            setTimeout(() => {
+                                quote.classList.add('visible');
+                            }, index * 1000);
+                        });
+                    }, 500);
+                    
+                    // Start fireworks
+                    startFireworks();
+                }, 100);
+            }, 500);
         }
 
-        // Initialize
-        createStars(100);
-        const timerInterval = setInterval(updateCountdown, 1000);
-        updateCountdown();
+        
+        function updateCountdown() {
+    const now = new Date().getTime();
+    const currentYear = new Date().getFullYear();
+    const newYear = new Date(`January 1, ${currentYear + 1} 00:00:00`).getTime();
+    const gap = newYear - now;
+
+    const second = 1000;
+    const minute = second * 60;
+    const hour = minute * 60;
+    const day = hour * 24;
+
+    const d = Math.floor(gap / day);
+    const h = Math.floor((gap % day) / hour);
+    const m = Math.floor((gap % hour) / minute);
+    const s = Math.floor((gap % minute) / second);
+
+    // Update countdown display
+    document.getElementById('days').innerText = d.toString().padStart(2, '0');
+    document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+    document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+    document.getElementById('seconds').innerText = s.toString().padStart(2, '0');
+
+    // Check if countdown has ended
+    if (gap <= 0) {
+        clearInterval(timerInterval);
+        showEndContent();
+    }
+}
+
+function testEnd() {
+    clearInterval(timerInterval);
+    showEndContent();
+}
+
+// Initialize
+createStars(100);
+const timerInterval = setInterval(updateCountdown, 1000);
+updateCountdown();
+
+
     </script>
 </body>
 </html>
